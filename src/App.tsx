@@ -357,6 +357,5 @@ function TaskCard({ task, onStatusChange, onDelete, getPriorityColor, getStatusC
     </div>
   );
 }
-}
 
 export default App;
