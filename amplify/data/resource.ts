@@ -7,6 +7,7 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+  // Tasks & To-Do Lists
   Task: a
     .model({
       title: a.string().required(),
@@ -22,24 +23,127 @@ const schema = a.schema({
       isRecurring: a.boolean(),
       recurringPattern: a.string(),
       completedAt: a.datetime(),
+      parentTaskId: a.id(), // For subtasks
     })
     .authorization((allow) => [allow.owner()]),
 
+  // Calendar & Events
+  Event: a
+    .model({
+      title: a.string().required(),
+      description: a.string(),
+      startDate: a.datetime().required(),
+      endDate: a.datetime().required(),
+      location: a.string(),
+      category: a.string(),
+      color: a.string(),
+      isAllDay: a.boolean(),
+      isRecurring: a.boolean(),
+      recurringPattern: a.string(),
+      reminderMinutes: a.integer(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Goals & Tracking
+  Goal: a
+    .model({
+      title: a.string().required(),
+      description: a.string(),
+      type: a.enum(['SHORT_TERM', 'LONG_TERM']),
+      targetDate: a.datetime(),
+      currentProgress: a.float(),
+      targetValue: a.float(),
+      unit: a.string(),
+      category: a.string(),
+      isCompleted: a.boolean(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Habits
+  Habit: a
+    .model({
+      name: a.string().required(),
+      description: a.string(),
+      frequency: a.enum(['DAILY', 'WEEKLY', 'MONTHLY']),
+      targetCount: a.integer(),
+      category: a.string(),
+      color: a.string(),
+      icon: a.string(),
+      isActive: a.boolean(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  HabitEntry: a
+    .model({
+      habitId: a.id().required(),
+      date: a.date().required(),
+      completed: a.boolean(),
+      notes: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Notes & Journaling
+  Note: a
+    .model({
+      title: a.string(),
+      content: a.string().required(),
+      type: a.enum(['NOTE', 'JOURNAL', 'VOICE', 'IMAGE']),
+      tags: a.string().array(),
+      category: a.string(),
+      mood: a.enum(['VERY_HAPPY', 'HAPPY', 'NEUTRAL', 'SAD', 'VERY_SAD']),
+      isPrivate: a.boolean(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Health & Wellness
+  HealthEntry: a
+    .model({
+      type: a.enum(['SLEEP', 'WATER', 'EXERCISE', 'MEAL', 'WEIGHT']),
+      value: a.float(),
+      unit: a.string(),
+      date: a.date().required(),
+      notes: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Finance & Budgeting
+  Expense: a
+    .model({
+      amount: a.float().required(),
+      description: a.string().required(),
+      category: a.string(),
+      date: a.date().required(),
+      type: a.enum(['INCOME', 'EXPENSE']),
+      isRecurring: a.boolean(),
+      recurringPattern: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  Budget: a
+    .model({
+      category: a.string().required(),
+      monthlyLimit: a.float().required(),
+      currentSpent: a.float(),
+      month: a.string().required(), // YYYY-MM format
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  // Categories & Organization
   Category: a
     .model({
       name: a.string().required(),
+      type: a.enum(['TASK', 'EVENT', 'GOAL', 'HABIT', 'NOTE', 'EXPENSE']),
       color: a.string(),
       icon: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
 
-  Reminder: a
+  // User Preferences
+  UserPreference: a
     .model({
-      taskId: a.id().required(),
-      reminderTime: a.datetime().required(),
-      message: a.string(),
-      isActive: a.boolean(),
-      notificationSent: a.boolean(),
+      key: a.string().required(),
+      value: a.string().required(),
+      type: a.enum(['THEME', 'NOTIFICATION', 'PRIVACY', 'GENERAL']),
     })
     .authorization((allow) => [allow.owner()]),
 });
