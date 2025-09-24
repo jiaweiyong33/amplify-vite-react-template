@@ -7,9 +7,39 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Task: a
     .model({
-      content: a.string(),
+      title: a.string().required(),
+      description: a.string(),
+      priority: a.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
+      status: a.enum(['TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+      dueDate: a.datetime(),
+      reminderDate: a.datetime(),
+      category: a.string(),
+      tags: a.string().array(),
+      estimatedHours: a.float(),
+      actualHours: a.float(),
+      isRecurring: a.boolean(),
+      recurringPattern: a.string(),
+      completedAt: a.datetime(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  Category: a
+    .model({
+      name: a.string().required(),
+      color: a.string(),
+      icon: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  Reminder: a
+    .model({
+      taskId: a.id().required(),
+      reminderTime: a.datetime().required(),
+      message: a.string(),
+      isActive: a.boolean(),
+      notificationSent: a.boolean(),
     })
     .authorization((allow) => [allow.owner()]),
 });
